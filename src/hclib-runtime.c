@@ -15,6 +15,7 @@
  */
 
 #include "hclib-internal.h"
+#include <stdbool.h>
 
 pthread_key_t selfKey;
 pthread_once_t selfKeyInitialized = PTHREAD_ONCE_INIT;
@@ -25,6 +26,22 @@ int nb_workers;
 int not_done;
 static double user_specified_timer = 0;
 static double benchmark_start_time_stats = 0;
+
+// things added
+bool* statuses;
+int NO_REQUEST = -1;
+int* request_cells;
+
+int scratch_number = 69;
+task_t scratch_value = {
+        ._fp = NULL,
+        .args = &scratch_number
+};
+task_t* NO_RESPONSE = &scratch_value;
+task_t** transfer_cells;
+void acquire(int i);
+
+
 
 double mysecond() {
     struct timeval tv;
@@ -58,12 +75,22 @@ void setup() {
     not_done = 1;
     pthread_once(&selfKeyInitialized, initializeKey);
     workers = (hclib_worker_state*) malloc(sizeof(hclib_worker_state) * nb_workers);
+
+    // more random stuff
+    statuses = (bool*) malloc(sizeof(bool) * nb_workers);
+    request_cells = (int*) malloc(sizeof(int) * nb_workers);
+    transfer_cells = malloc(sizeof(task_t*) * nb_workers);
+
     for(int i=0; i<nb_workers; i++) {
+        transfer_cells[i] = (task_t*) malloc(sizeof(task_t));
       workers[i].deque = malloc(sizeof(deque_t));
       void * val = NULL;
       dequeInit(workers[i].deque, val);
       workers[i].current_finish = NULL;
       workers[i].id = i;
+      statuses[i] = false;
+
+      transfer_cells[i] = NO_RESPONSE;
     }
     // Start workers
     for(int i=1;i<nb_workers;i++) {
@@ -185,6 +212,14 @@ void hclib_finalize() {
     printf("=============================================================================\n");
     printf("===== Total Time in %.f msec =====\n", duration);
     printf("===== Test PASSED in 0.0 msec =====\n");
+
+//    free(statuses);
+//    free(request_cells);
+//    for (int j = 0; j < nb_workers; ++j) {
+//        free(transfer_cells[i]);
+//    }
+//    free(transfer_cells);
+//    free(NO_RESPONSE);
 }
 
 void hclib_kernel(generic_frame_ptr fct_ptr, void * arg) {
@@ -208,17 +243,63 @@ void* worker_routine(void * args) {
            // try to steal
            int i = 1;
            while (i < nb_workers) {
-               task = dequeSteal(workers[(wid+i)%(nb_workers)].deque);
-	       if(task) {
+               acquire(wid);
+               task = dequePop(workers[wid].deque);
+               if(task) {
                    workers[wid].total_steals++;
                    break;
                }
-	       i++;
-	   }
+               i++;
+           }
         }
-        if(task) {
-            execute_task(task);
-        }
+       if(task) {
+           workers[wid].total_steals++;
+           execute_task(task);
+       }
+   }
+   return NULL;
+}
+
+int has_no_work(int i) {
+    return workers[i].deque->head == workers[i].deque->tail;
+}
+void update_status(int i) {
+    int update = has_no_work(i);
+    if (statuses[i] != update)
+        statuses[i] = update;
+}
+void communicate(int i) {
+    int thief = request_cells[i];
+    if (thief == NO_REQUEST)
+        return;
+
+    if (has_no_work(i)) {
+        transfer_cells[thief] = NULL;
+    } else {
+        transfer_cells[i] = dequeSteal(workers[i].deque);
     }
-    return NULL;
+    request_cells[i] = NO_REQUEST;
+}
+void add_task(int i, task_t* task) {
+    dequePush(workers[i].deque, task);
+    update_status(i);
+}
+void acquire(int i) {
+    while (true) {
+        transfer_cells[i] = NO_RESPONSE;
+        int k = (rand() % nb_workers) - 1;
+        while (k == i)
+            k = (rand() % nb_workers) - 1;
+
+        if (statuses[k] && hc_cas(&request_cells[k], NO_REQUEST, i)) {
+            while (transfer_cells[i] == NO_RESPONSE)
+                communicate(i);
+            if (transfer_cells[i] != NULL) {
+                add_task(i, transfer_cells[i]);
+                request_cells[i] = NO_REQUEST;
+                return;
+            }
+        }
+        communicate(i);
+    }
 }

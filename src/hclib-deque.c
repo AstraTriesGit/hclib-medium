@@ -64,30 +64,31 @@ void * dequeSteal(deque_t * deq) {
     int tail;
     
     head = deq->head;
-    hc_mfence();
+    // hc_mfence();
     tail = deq->tail;
     if ((tail - head) <= 0) {
         return NULL;
     }
 
     void * rt = (void *) deq->data[head % INIT_DEQUE_CAPACITY];
+    // deq->head--;
 
     /* compete with other thieves and possibly the owner (if the size == 1) */
     if (hc_cas(&deq->head, head, head + 1)) { /* competing */
         return rt;
     }
-    return NULL;
+    return rt;
 }
 
 /*
  * pop the task out of the deque from the tail
  */
 void * dequePop(deque_t * deq) {
-    hc_mfence();
+    // hc_mfence();
     int tail = deq->tail;
     tail--;
     deq->tail = tail;
-    hc_mfence();
+    // hc_mfence();
     int head = deq->head;
 
     int size = tail - head;
@@ -101,9 +102,9 @@ void * dequePop(deque_t * deq) {
         return rt;
     }
 
-    /* now size == 1, I need to compete with the thieves */
-    if (!hc_cas(&deq->head, head, head + 1))
-        rt = NULL; /* losing in competition */
+//    /* now size == 1, I need to compete with the thieves */
+//    if (!hc_cas(&deq->head, head, head + 1))
+//        rt = NULL; /* losing in competition */
 
     /* now the deque is empty */
     deq->tail = deq->head;

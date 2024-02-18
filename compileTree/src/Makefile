@@ -128,7 +128,7 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
 libhclib_la_DEPENDENCIES =
 am_libhclib_la_OBJECTS = libhclib_la-hclib-runtime.lo \
-	libhclib_la-gojo-deque.lo libhclib_la-hclib_cpp.lo
+	libhclib_la-hclib-deque.lo libhclib_la-hclib_cpp.lo
 libhclib_la_OBJECTS = $(am_libhclib_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -152,7 +152,7 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/libhclib_la-gojo-deque.Plo \
+am__depfiles_remade = ./$(DEPDIR)/libhclib_la-hclib-deque.Plo \
 	./$(DEPDIR)/libhclib_la-hclib-runtime.Plo \
 	./$(DEPDIR)/libhclib_la-hclib_cpp.Plo
 am__mv = mv -f
@@ -399,7 +399,7 @@ lib_LTLIBRARIES = libhclib.la
 noinst_LTLIBRARIES = 
 libhclib_la_LIBADD = 
 AM_CXXFLAGS = 
-libhclib_la_SOURCES = hclib-runtime.c gojo-deque.c hclib_cpp.cpp
+libhclib_la_SOURCES = hclib-runtime.c hclib-deque.c hclib_cpp.cpp
 
 # build hclib
 libhclib_la_CXXFLAGS = $(CXXFLAGS) $(INCLUDES_DIR) $(AM_CXXFLAGS)
@@ -494,7 +494,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/libhclib_la-gojo-deque.Plo # am--include-marker
+include ./$(DEPDIR)/libhclib_la-hclib-deque.Plo # am--include-marker
 include ./$(DEPDIR)/libhclib_la-hclib-runtime.Plo # am--include-marker
 include ./$(DEPDIR)/libhclib_la-hclib_cpp.Plo # am--include-marker
 
@@ -532,12 +532,12 @@ libhclib_la-hclib-runtime.lo: hclib-runtime.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhclib_la_CFLAGS) $(CFLAGS) -c -o libhclib_la-hclib-runtime.lo `test -f 'hclib-runtime.c' || echo '$(srcdir)/'`hclib-runtime.c
 
-libhclib_la-gojo-deque.lo: gojo-deque.c
-	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhclib_la_CFLAGS) $(CFLAGS) -MT libhclib_la-gojo-deque.lo -MD -MP -MF $(DEPDIR)/libhclib_la-gojo-deque.Tpo -c -o libhclib_la-gojo-deque.lo `test -f 'gojo-deque.c' || echo '$(srcdir)/'`gojo-deque.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libhclib_la-gojo-deque.Tpo $(DEPDIR)/libhclib_la-gojo-deque.Plo
-#	$(AM_V_CC)source='gojo-deque.c' object='libhclib_la-gojo-deque.lo' libtool=yes \
+libhclib_la-hclib-deque.lo: hclib-deque.c
+	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhclib_la_CFLAGS) $(CFLAGS) -MT libhclib_la-hclib-deque.lo -MD -MP -MF $(DEPDIR)/libhclib_la-hclib-deque.Tpo -c -o libhclib_la-hclib-deque.lo `test -f 'hclib-deque.c' || echo '$(srcdir)/'`hclib-deque.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libhclib_la-hclib-deque.Tpo $(DEPDIR)/libhclib_la-hclib-deque.Plo
+#	$(AM_V_CC)source='hclib-deque.c' object='libhclib_la-hclib-deque.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhclib_la_CFLAGS) $(CFLAGS) -c -o libhclib_la-gojo-deque.lo `test -f 'gojo-deque.c' || echo '$(srcdir)/'`gojo-deque.c
+#	$(AM_V_CC_no)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhclib_la_CFLAGS) $(CFLAGS) -c -o libhclib_la-hclib-deque.lo `test -f 'hclib-deque.c' || echo '$(srcdir)/'`hclib-deque.c
 
 .cpp.o:
 	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -774,7 +774,7 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 	clean-noinstLTLIBRARIES mostlyclean-am
 
 distclean: distclean-recursive
-		-rm -f ./$(DEPDIR)/libhclib_la-gojo-deque.Plo
+		-rm -f ./$(DEPDIR)/libhclib_la-hclib-deque.Plo
 	-rm -f ./$(DEPDIR)/libhclib_la-hclib-runtime.Plo
 	-rm -f ./$(DEPDIR)/libhclib_la-hclib_cpp.Plo
 	-rm -f Makefile
@@ -822,7 +822,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
-		-rm -f ./$(DEPDIR)/libhclib_la-gojo-deque.Plo
+		-rm -f ./$(DEPDIR)/libhclib_la-hclib-deque.Plo
 	-rm -f ./$(DEPDIR)/libhclib_la-hclib-runtime.Plo
 	-rm -f ./$(DEPDIR)/libhclib_la-hclib_cpp.Plo
 	-rm -f Makefile

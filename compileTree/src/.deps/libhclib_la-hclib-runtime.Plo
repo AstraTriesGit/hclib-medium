@@ -32,7 +32,8 @@ libhclib_la-hclib-runtime.lo: ../../src/hclib-runtime.c \
  /usr/include/sys/select.h /usr/include/bits/select.h \
  /usr/include/bits/types/sigset_t.h ../../inc/hclib.h \
  /usr/include/string.h /usr/include/assert.h ../../src/inc/hclib-deque.h \
- ../../src/inc/hclib-atomics.h
+ ../../src/inc/hclib-atomics.h \
+ /usr/lib/gcc/x86_64-redhat-linux/13/include/stdbool.h
 /usr/include/stdc-predef.h:
 ../../src/inc/hclib-internal.h:
 /usr/include/stdio.h:
@@ -95,3 +96,4 @@ libhclib_la-hclib-runtime.lo: ../../src/hclib-runtime.c \
 /usr/include/assert.h:
 ../../src/inc/hclib-deque.h:
 ../../src/inc/hclib-atomics.h:
+/usr/lib/gcc/x86_64-redhat-linux/13/include/stdbool.h:

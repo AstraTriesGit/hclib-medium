@@ -17,7 +17,7 @@ libhclib_la_LIBADD =
 
 AM_CXXFLAGS = 
 
-libhclib_la_SOURCES = hclib-runtime.c gojo-deque.c hclib_cpp.cpp
+libhclib_la_SOURCES = hclib-runtime.c hclib-deque.c hclib_cpp.cpp
 
 # build hclib
 libhclib_la_CXXFLAGS= $(CXXFLAGS) $(INCLUDES_DIR) $(AM_CXXFLAGS)
