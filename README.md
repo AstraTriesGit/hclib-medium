@@ -42,4 +42,7 @@ Dependencies
 
 * automake
 * gcc >= 4.8.4, or clang >= 3.5
-  (must support -std=c11 and -std=c++11)
+  (must support -std=c11 and -std=c++11)    
+
+## Deadline 3 (work on numa-aware branch)
+Dude at least figure out what this deadline requires, you have no time again. At least we now work in the cloud, yay.
