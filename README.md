@@ -43,3 +43,20 @@ Dependencies
 * automake
 * gcc >= 4.8.4, or clang >= 3.5
   (must support -std=c11 and -std=c++11)
+
+# Bruh (student section)
+## TODO
+- create test case and update makefile
+- change user API
+- take input of NUMA processor design
+- map workers to physical NUMA cores
+- ...
+- profit
+- use compile time flags to enable/disable features
+
+## Rough Idea
+- Divide top level computation into N parts, N = number of NUMA domains.    
+- User will now use `finish_parallel_for()` instead of `finish_async()`, but still, async will be created.
+
+- take input of NUMA architecture as `x:y`, x=hierarchy level, y= no. of NUMA domains/workers under it.   
+eg.  
