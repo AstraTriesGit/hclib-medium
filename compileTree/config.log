@@ -524,7 +524,6 @@ config.status:1070: creating Makefile
 config.status:1070: creating src/Makefile
 config.status:1227: executing depfiles commands
 config.status:1304: cd src       && sed -e '/# am--include-marker/d' Makefile         | make -f - am--depfiles
-make: Nothing to be done for 'am--depfiles'.
 config.status:1309: $? = 0
 config.status:1227: executing libtool commands
 

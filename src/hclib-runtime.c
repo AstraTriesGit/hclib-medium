@@ -26,6 +26,38 @@ int not_done;
 static double user_specified_timer = 0;
 static double benchmark_start_time_stats = 0;
 
+// added things
+int nb_domains;
+int nb_superdomains;
+int n_workers;
+
+void hws_steal_within_domain(int w_domain, int wid, hclib_worker_state* worker) {
+    // if you know worker domain, wid you can figure out the other workers
+    for (int i = w_domain * n_workers; i < (w_domain + 1) * n_workers; i++)
+    {
+        if (i == wid)
+        continue;
+        worker->hws_object->hierarchy[worker->hws_object->iter++] = i;
+        //printf("%d ", i);
+    }
+}
+void hws_steal_within_superdomain(int w_sd, int w_domain, int wid, hclib_worker_state* worker) {
+    // if you know the worker's sd, you can find other domains
+    for(int i = w_sd * nb_domains; i < (w_sd + 1) * nb_domains; i++) {
+        if (i == w_domain)
+        continue;
+        hws_steal_within_domain(i, wid, worker);
+    }
+}
+void hws_steal_within_other_sd(int w_sd, int w_domain, int wid, hclib_worker_state* worker) {
+    for (int i = 0; i < nb_superdomains; i++) {
+        if (i == w_sd)
+        continue;
+        hws_steal_within_superdomain(i, w_domain, wid, worker);
+    }
+}
+
+
 double mysecond() {
     struct timeval tv;
     gettimeofday(&tv, 0);
@@ -64,7 +96,27 @@ void setup() {
       dequeInit(workers[i].deque, val);
       workers[i].current_finish = NULL;
       workers[i].id = i;
+
+      workers[i].hws_object = (hws*) malloc(sizeof(hws));
+      workers[i].hws_object->iter = 1;
+      workers[i].hws_object->hierarchy = (int*)malloc(sizeof(int) * nb_workers);
+      workers[i].hws_object->hierarchy[0] = i;
     }
+
+    // assign stealing affinities
+    for (int i = 0; i < nb_superdomains; i++) {
+        for (int j = i * nb_domains; j < (i + 1) * nb_domains; j++){
+            // now select a worker to set hws
+            // can you get the range of workers using only
+            // nb_superdomains, nb_domains?
+            for (int k = j * n_workers; k < (j + 1) * n_workers; k++){
+                hws_steal_within_domain(j, k, &workers[k]);
+                hws_steal_within_superdomain(i, j, k, &workers[k]);
+                hws_steal_within_other_sd(i, j, k, &workers[k]);
+            }   
+        } 
+    }
+    
     // Start workers
     for(int i=1;i<nb_workers;i++) {
         pthread_attr_t attr;
@@ -87,8 +139,13 @@ void check_out_finish(finish_t * finish) {
 void hclib_init(int argc, char **argv) {
     printf("---------HCLIB_RUNTIME_INFO-----------\n");
     printf(">>> HCLIB_WORKERS\t= %s\n", getenv("HCLIB_WORKERS"));
+    printf(">>> HCLIB_DOMAINS\t= %s\n", getenv("HCLIB_DOMAINS"));
+    printf(">>> HCLIB_S_DOMAINS\t= %s\n", getenv("HCLIB_S_DOMAINS"));
     printf("----------------------------------------\n");
-    nb_workers = (getenv("HCLIB_WORKERS") != NULL) ? atoi(getenv("HCLIB_WORKERS")) : 1;
+    n_workers = (getenv("HCLIB_WORKERS") != NULL) ? atoi(getenv("HCLIB_WORKERS")) : 1;
+    nb_domains = (getenv("HCLIB_DOMAINS") != NULL) ? atoi(getenv("HCLIB_DOMAINS")) : 1;
+    nb_superdomains = (getenv("HCLIB_S_DOMAINS") != NULL) ? atoi(getenv("HCLIB_S_DOMAINS")) : 1;
+    nb_workers = nb_superdomains * nb_domains * n_workers;
     setup();
     benchmark_start_time_stats = mysecond();
 }
@@ -129,15 +186,14 @@ void slave_worker_finishHelper_routine(finish_t* finish) {
        task_t* task = dequePop(workers[wid].deque);
        if (!task) {
            // try to steal
-           int i = 1;
-           while(finish->counter > 0 && i < nb_workers) {
-               task = dequeSteal(workers[(wid+i)%(nb_workers)].deque);
-	       if(task) {
-		   workers[wid].total_steals++;	   
-	           break;
-	       }
-	       i++;
-	   }
+            for (int i = 1; i < nb_workers; i++){
+                int index = workers[wid].hws_object->hierarchy[i];
+                task = dequeSteal(workers[index].deque);
+                if(task) {
+                    workers[wid].total_steals++;
+                    break;
+                }
+            }
         }
         if(task) {
             execute_task(task);
@@ -201,22 +257,30 @@ void hclib_finish(generic_frame_ptr fct_ptr, void * arg) {
 
 void* worker_routine(void * args) {
     int wid = *((int *) args);
-   set_current_worker(wid);
-   while(not_done) {
-       task_t* task = dequePop(workers[wid].deque);
-       if (!task) {
+    set_current_worker(wid);
+    while(not_done) {
+        task_t* task = dequePop(workers[wid].deque);
+        if (!task) {
            // try to steal
-           int i = 1;
-           while (i < nb_workers) {
-               task = dequeSteal(workers[(wid+i)%(nb_workers)].deque);
-	       if(task) {
-                   workers[wid].total_steals++;
-                   break;
-               }
-	       i++;
-	   }
-        }
+        //    int i = 1;
+        //    while (i < nb_workers) {
+        //        task = dequeSteal(workers[(wid+i)%(nb_workers)].deque);
+	    //    if(task) {
+        //            workers[wid].total_steals++;
+        //            break;
+        //        }
+	    //    i++;
+            for (int i = 1; i < nb_workers; i++){
+                int index = workers[wid].hws_object->hierarchy[i];
+                task = dequeSteal(workers[index].deque);
+                if(task) {
+                    workers[wid].total_steals++;
+                    break;
+                }
+            }
+	    }
         if(task) {
+            // printf("lmao I never stole anything gg\n");
             execute_task(task);
         }
     }

@@ -29,11 +29,17 @@ typedef struct finish_t {
     volatile int counter;
 } finish_t;
 
+typedef struct {
+    int iter;
+    int* hierarchy;
+} hws;
+
 typedef struct hclib_worker_state {
     pthread_t tid; // the pthread associated
     struct finish_t* current_finish;
     deque_t * deque;
     int id; // The id, identify a worker
     long total_push;
-    long total_steals;
+    long long total_steals;
+    hws* hws_object;
 } hclib_worker_state;
