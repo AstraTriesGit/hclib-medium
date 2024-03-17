@@ -274,13 +274,13 @@ CC = gcc
 CCDEPMODE = depmode=gcc3
 
 # cflags: important to define that otherwise we inherit default values too
-CFLAGS = -Wall -g -O3 -std=c11
+CFLAGS = -Wall -g -O3 -std=c11 -lnuma
 CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -Wall -g -O3 -std=c++11
+CXXFLAGS = -Wall -g -O3 -std=c++11 -lnuma
 CYGPATH_W = echo
 DEFS = -DPACKAGE_NAME=\"hclib\" -DPACKAGE_TARNAME=\"hclib\" -DPACKAGE_VERSION=\"1.0\" -DPACKAGE_STRING=\"hclib\ 1.0\" -DPACKAGE_BUGREPORT=\"vivekk@iiitd.ac.in\" -DPACKAGE_URL=\"\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\"
 DEPDIR = .deps

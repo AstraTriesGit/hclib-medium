@@ -29,6 +29,12 @@ inline void async(T &&lambda) {
     hclib_async(lambda_wrapper<U>, new U(lambda));
 }
 
+template<typename T>
+inline void parallel_for(T &&lambda) {
+    typedef typename std::remove_reference<T>::type U;
+    hclib_async(lambda_wrapper<U>, new U(lambda));
+}
+
 template <typename T>
 inline void finish(T &&lambda) {
     typedef typename std::remove_reference<T>::type U;

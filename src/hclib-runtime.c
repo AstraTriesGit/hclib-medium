@@ -15,6 +15,7 @@
  */
 
 #include "hclib-internal.h"
+#include <numa.h>
 
 pthread_key_t selfKey;
 pthread_once_t selfKeyInitialized = PTHREAD_ONCE_INIT;
@@ -86,6 +87,7 @@ int hclib_num_workers() {
 void * worker_routine(void * args);
 
 void setup() {
+    numa_available();
     // Build queues
     not_done = 1;
     pthread_once(&selfKeyInitialized, initializeKey);
@@ -116,6 +118,23 @@ void setup() {
             }   
         } 
     }
+    // NUMA-aware worker init
+    // for (int i = 0; i < nb_superdomains; i++) {
+    //     for (int j = i * nb_domains; j < (i + 1) * nb_domains; j++){
+    //         // now j has the numa node number
+    //         struct bitmask* nodemask = numa_allocate_nodemask();
+    //         numa_bitmask_setbit(nodemask, j);
+
+    //         for (int k = j * n_workers; k < (j + 1) * n_workers; k++){
+    //             pthread_attr_t attr;
+    //             pthread_attr_init(&attr);
+    //             pthread_attr_setaffinity_np(&attr, numa_bitmask_weight(nodemask), nodemask);
+                
+    //             pthread_create(&workers[i].tid, &attr, &worker_routine, &workers[i].id);
+    //         }   
+    //         numa_bitmask_free(nodemask);
+    //     } 
+    // }
     
     // Start workers
     for(int i=1;i<nb_workers;i++) {

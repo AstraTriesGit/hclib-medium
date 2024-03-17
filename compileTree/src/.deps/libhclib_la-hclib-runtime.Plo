@@ -54,7 +54,11 @@ libhclib_la-hclib-runtime.lo: ../../src/hclib-runtime.c \
  /usr/include/string.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
  /usr/include/assert.h ../../src/inc/hclib-deque.h \
- ../../src/inc/hclib-atomics.h
+ ../../src/inc/hclib-atomics.h /usr/include/numa.h \
+ /usr/include/x86_64-linux-gnu/sys/types.h \
+ /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-intn.h
 
 /usr/include/stdc-predef.h:
 
@@ -183,3 +187,13 @@ libhclib_la-hclib-runtime.lo: ../../src/hclib-runtime.c \
 ../../src/inc/hclib-deque.h:
 
 ../../src/inc/hclib-atomics.h:
+
+/usr/include/numa.h:
+
+/usr/include/x86_64-linux-gnu/sys/types.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/timer_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:

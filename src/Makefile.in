@@ -274,13 +274,13 @@ CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 
 # cflags: important to define that otherwise we inherit default values too
-CFLAGS = -Wall -g -O3 -std=c11
+CFLAGS = -Wall -g -O3 -std=c11 -lnuma
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
-CXXFLAGS = -Wall -g -O3 -std=c++11
+CXXFLAGS = -Wall -g -O3 -std=c++11 -lnuma
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
